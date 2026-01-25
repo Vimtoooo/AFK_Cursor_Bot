@@ -6,7 +6,7 @@ import time
 
 from Exceptions import BotAlreadyActivatedError, BotAlreadyDeactivatedError, ThreadNotStartedError, HotkeyNotDefinedError
 
-class Cursor_Bot:
+class CursorBot:
 
     def __init__(self):
         self.__x_axis: int = 1000
@@ -16,6 +16,7 @@ class Cursor_Bot:
         self.__duration: int | float = 3
         self.__start_time: float = 0
         self.__elapsed_time: float = 0
+        self.__overall_elapsed_time: float = 0
 
         self.__threads: list[threading.Thread] = []
         self.__is_active: bool = False
@@ -48,18 +49,22 @@ class Cursor_Bot:
         print(f"Bot elapsed time: {self.__elapsed_time} seconds")
 
         try:
-            for t in self.__threads:
-                t.join()
+            for thread in self.__threads:
+                thread.join()
 
         except RuntimeError:
             raise ThreadNotStartedError("The thread was not currently being executed for the bot to terminate")
         
         finally:
             self.__threads.clear()
+            self.__overall_elapsed_time += self.__elapsed_time
             self.__start_time = 0
             self.__elapsed_time = 0
 
     def set_movement_area(self, x: int, y: int, width: int, height: int):
+        pass
+
+    def auto_set_movement_area(self):
         pass
 
     def perform_random_click(self):
@@ -84,8 +89,14 @@ class Cursor_Bot:
 
     def __str__(self) -> str:
         current_status: str = "Running" if self.__is_active else "Inactive"
+        
         if self.__is_active:
             end_time_temporary: float = time.perf_counter()
-            _current_elapsed_time: float = round(end_time_temporary - self.__start_time, 3)
-            return f"Current Status: {self.__is_active}"
-        return f""
+            current_elapsed_time: float = round(end_time_temporary - self.__start_time, 3)
+            
+            return f"Current Status: {current_status}\n\n\
+                     Current elapsed Time: {current_elapsed_time} seconds\n\
+                     Overall elapsed Time: {self.__overall_elapsed_time} seconds"
+        
+        return f"Current Status: {current_status}\n\n\
+                 Overall elapsed Time: {self.__overall_elapsed_time} seconds"

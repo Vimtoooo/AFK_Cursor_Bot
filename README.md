@@ -24,6 +24,7 @@ We will go through the various methods, libraries and illustrate what each proce
 * `activate_bot(self)`: Activates the bot, executing a **while-loop**.
 * `deactivate_bot(self)`: Deactivates the bot, breaking the **while-loop**.
 * `set_movement_area(self, x, y, width, height)`: Deposits the coordinates of  movement areas for the bot itself.
+* `auto_set_movement_area(self)`: Automatically sets the coordinates of movement for you, based on the size of your screen.
 * `perform_random_click(self)`: Executes a right-click, just for fun `:)` (later, there will be a feature to specify which button to press).
 * `__str__(self)`: A string dunder method that returns the status of the current bot.
 * `add_hotkey_listener(self, key="esc")`: A simple but advanced feature which uses the library `keyboard` to listen for global hotkeys like the **"esc"**, to instantly deactivate the bot, regardless of what you're doing (can be used as an emergency button!).
