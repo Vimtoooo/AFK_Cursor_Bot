@@ -10,6 +10,6 @@ class ThreadNotStartedError(Exception):
     def __init__(self, error: str):
         super().__init__(error)
 
-class HotkeyAlreadyDefinedError(Exception):
+class HotkeyNotDefinedError(Exception):
     def __init__(self, error: str):
         super().__init__(error)

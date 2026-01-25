@@ -8,7 +8,8 @@ class Test_Cases:
     @staticmethod
     def test_case1():
         bot1: Cursor_Bot = Cursor_Bot()
-        bot1.
+        bot1.add_hotkey_listener("esc")
+        bot1.activate_bot()
 
     @staticmethod
     def test_case2():
@@ -17,3 +18,6 @@ class Test_Cases:
     @staticmethod
     def test_case3():
         pass
+
+if __name__ == "__main__":
+    Test_Cases.test_case1()

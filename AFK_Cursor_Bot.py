@@ -4,7 +4,7 @@ import keyboard as k
 import random as r
 import time
 
-from Exceptions import BotAlreadyActivatedError, BotAlreadyDeactivatedError, ThreadNotStartedError, HotkeyAlreadyDefinedError
+from Exceptions import BotAlreadyActivatedError, BotAlreadyDeactivatedError, ThreadNotStartedError, HotkeyNotDefinedError
 
 class Cursor_Bot:
 
@@ -20,6 +20,7 @@ class Cursor_Bot:
         self.__threads: list[threading.Thread] = []
         self.__is_active: bool = False
         self.__hotkey: str = "esc"
+        k.add_hotkey(self.__hotkey, self.deactivate_bot)
 
     def activate_bot(self):
         
@@ -44,7 +45,7 @@ class Cursor_Bot:
 
         end_time: float = time.perf_counter()
         self.__elapsed_time = round(end_time - self.__start_time, 3)
-        print(f"Bot elapsed time: {self.__elapsed_time: ,.} seconds")
+        print(f"Bot elapsed time: {self.__elapsed_time} seconds")
 
         try:
             for t in self.__threads:
@@ -64,12 +65,12 @@ class Cursor_Bot:
     def perform_random_click(self):
         pass
 
-    def _add_hotkey_listener(self, key: str = "esc"):
+    def add_hotkey_listener(self, key: str):
 
-        if self.__hotkey == key.lower() and self.__hotkey is not None:
-            raise HotkeyAlreadyDefinedError(f"The '{key}' keybind has already been defined as a hotkey!")
+        if self.__hotkey is None or key is None:
+            raise HotkeyNotDefinedError(f"The '{key}' hotkey has not been defined!")
         
-        self.__hotkey = key
+        self.__hotkey = key.lower()
 
         k.add_hotkey(self.__hotkey, self.deactivate_bot)
 
