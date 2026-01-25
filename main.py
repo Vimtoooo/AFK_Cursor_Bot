@@ -8,6 +8,7 @@ class Test_Cases:
     @staticmethod
     def test_case1():
         bot1: Cursor_Bot = Cursor_Bot()
+        bot1.
 
     @staticmethod
     def test_case2():
