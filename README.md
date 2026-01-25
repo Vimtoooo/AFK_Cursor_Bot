@@ -8,12 +8,15 @@ Ever needed a self-functioning AFK cursor bot to actively dislocate your cursor 
 
 We will go through the various methods, libraries and illustrate what each process of the program will do to achieve every criteria.
 
+> [!NOTE]
+> This is a still "working on" project, so not everything has been implemented yet or correctly.
+
 ### Libraries Used:
 
 - `pyautogui`: The primary library which will handle the logical thinking of moving the cursor, bringing the bot to live.
 - `threading`: Solves any blocking loop issues that are executed by the main bot's logic in a separate thread, from not only keeping your main program responsive to having control to terminate the bot or call various methods, making the experience more dynamic.
 - `random`: Picks the randomly generated number to be one of the required coordinates (for the x-axis and the y-axis).
-- `time`: Provides a short cool-down, giving the ability to prevent the active spam of constant cursor dislocation.
+- `time`: Provides a short cool-down, giving the ability to prevent the active spam of constant cursor dislocation, but also keeping track of how long the bot has been running for.
 
 #### Methods:
 

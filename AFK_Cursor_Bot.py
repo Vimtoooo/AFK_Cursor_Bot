@@ -14,8 +14,10 @@ class Cursor_Bot:
         self._width: int = 500
         self._height: int = 500
         self._duration: int | float = 3
-        
-        self._threads: list = []
+        self._start_time: float = 0
+        self._elapsed_time: float = 0
+
+        self._threads: list[threading.Thread] = []
         self._is_active: bool = False
         self._hotkey: str = "esc"
 
@@ -26,24 +28,35 @@ class Cursor_Bot:
         
         self._is_active = True
 
-        t: threading.Thread = threading.Thread(target=self._run_bot_logic)
-        self._threads.append(t)
-        t.start()
+        thread: threading.Thread = threading.Thread(target=self._run_bot_logic)
+        self._threads.append(thread)
+        thread.start()
+        self._start_time = time.perf_counter()
+
 
     def deactivate_bot(self):
         
         if not self._is_active:
             raise BotAlreadyDeactivatedError("The bot has already been deactivated!")
         
+        self._is_active = False
+        print("The bot has been terminated")
+
+        end_time: float = time.perf_counter()
+        self._elapsed_time = round(end_time - self._start_time, 3)
+        print(f"Bot elapsed time: {self._elapsed_time: ,.} seconds")
+
         try:
-            t: threading.Thread = self._threads.pop()
-            t.join()
+            for t in self._threads:
+                t.join()
 
         except RuntimeError:
             raise ThreadNotStartedError("The thread was not currently being executed for the bot to terminate")
         
         finally:
-            self._is_active = False
+            self._threads.clear()
+            self._start_time = 0
+            self._elapsed_time = 0
 
     def set_movement_area(self, x: int, y: int, width: int, height: int):
         pass
@@ -53,7 +66,7 @@ class Cursor_Bot:
 
     def add_hotkey_listener(self, key: str = "esc"):
 
-        if self._hotkey == key.lower():
+        if self._hotkey == key.lower() and self._hotkey is not None:
             raise HotkeyAlreadyDefinedError(f"The '{key}' keybind has already been defined as a hotkey!")
         
         self._hotkey = key
@@ -69,4 +82,9 @@ class Cursor_Bot:
             pag.moveTo(random_x, random_y, duration=self._duration)
 
     def __str__(self) -> str:
-        return f"Current Status: {self._is_active}"
+        current_status: str = "Running" if self._is_active else "Inactive"
+        if self._is_active:
+            end_time_temporary: float = time.perf_counter()
+            current_elapsed_time: float = round(end_time_temporary - self._start_time, 3)
+            return f"Current Status: {self._is_active}"
+        return f""
