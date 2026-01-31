@@ -21,3 +21,7 @@ class InvalidDataTypeError(Exception):
 class ParametersOutOfBoundsError(Exception):
     def __init__(self, error: str):
         super().__init__(error)
+
+class InvalidArgumentsError(Exception):
+    def __init__(self, error: str):
+        super().__init__(error)

@@ -4,7 +4,7 @@ import keyboard as k
 import random as r
 import time
 
-from Exceptions import BotAlreadyActivatedError, BotAlreadyDeactivatedError, ThreadNotStartedError, HotkeyNotDefinedError, InvalidDataTypeError, ParametersOutOfBoundsError
+from Exceptions import BotAlreadyActivatedError, BotAlreadyDeactivatedError, ThreadNotStartedError, HotkeyNotDefinedError, InvalidDataTypeError, ParametersOutOfBoundsError, InvalidArgumentsError
 
 class CursorBot:
 
@@ -71,7 +71,19 @@ class CursorBot:
         self.__height = height
 
     def auto_set_movement_area(self, size: str = "medium"):
-        pass
+        formatted_size: str = self.__validate_size(size)
+
+        if formatted_size == "small":
+            pass
+
+        elif formatted_size == "medium":
+            pass
+        
+        elif formatted_size == "large":
+            pass
+
+        else:
+            pass
 
     def perform_random_click(self):
         pass
@@ -116,6 +128,18 @@ class CursorBot:
             raise ParametersOutOfBoundsError(f"Width and height must be non-negative integers:\nWidth -> {width}\nHeight -> {height}")
         
         return True
+    
+    def __validate_size(self, size: str) -> str:
+        
+        if not isinstance(size, str):
+            raise InvalidDataTypeError(f"Invalid data type for 'size': {type(size)}")
+        
+        size = size.lower()
+        
+        if size not in ("small", "medium", "large", "custom"):
+            raise InvalidArgumentsError(f"Invalid arguments for 'size': {size}")
+        
+        return size
 
     def __str__(self) -> str:
         current_status: str = "Running" if self.__is_active else "Inactive"
