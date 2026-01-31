@@ -23,7 +23,7 @@ We will go through the various methods, libraries and illustrate what each proce
 * `__init__(self)`: The constructor provides instance attributes, whether the user would like to alter the default coordinates, the speed of the cursor, and optionally, the time of cool-down. Later on, property methods (setter, getter and deleter) will be made.
 * `activate_bot(self)`: Activates the bot, executing a **while-loop**.
 * `deactivate_bot(self)`: Deactivates the bot, breaking the **while-loop**.
-* `set_movement_area(self, x, y, width, height)`: Deposits the coordinates of  movement areas for the bot itself.
+* `set_movement_area(self, x, y, width, height)`: Deposits the coordinates of movement areas for the bot itself.
 * `auto_set_movement_area(self)`: Automatically sets the coordinates of movement for you, based on the size of your screen.
 * `perform_random_click(self)`: Executes a right-click, just for fun `:)` (later, there will be a feature to specify which button to press).
 * `__str__(self)`: A string dunder method that returns the status of the current bot.
