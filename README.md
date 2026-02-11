@@ -42,3 +42,4 @@ We will go through the various methods, libraries and illustrate what each proce
 * `perform_random_click(self, size)`: Executes a right-click, just for fun `:)` (later, there will be a feature to specify which button to press).
 * `__str__(self)`: A string dunder method that returns the status of the current bot.
 * `add_hotkey_listener(self, key="esc")`: A simple but advanced feature which uses the library `keyboard` to listen for global hotkeys like the **"esc"**, to instantly deactivate the bot, regardless of what you're doing (can be used as an emergency button!).
+* `reset_settings(self)`: Resets all instance attributes to their default values. (soon)

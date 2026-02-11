@@ -25,3 +25,7 @@ class ParametersOutOfBoundsError(Exception):
 class InvalidArgumentsError(Exception):
     def __init__(self, error: str):
         super().__init__(error)
+
+class IllegalModificationError(Exception):
+    def __init__(self, error: str):
+        super().__init__(error)

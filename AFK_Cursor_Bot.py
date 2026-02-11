@@ -4,12 +4,12 @@ import keyboard as k
 import random as r
 import time
 
-from Exceptions import BotAlreadyActivatedError, BotAlreadyDeactivatedError, ThreadNotStartedError, HotkeyNotDefinedError, InvalidDataTypeError, ParametersOutOfBoundsError, InvalidArgumentsError
+from Exceptions import *
 
 class CursorBot:
 
     def __init__(self):
-        self.__screen_width, self.__screen_height = pag.size()
+        self.__screen_width, self.__screen_height = pag.size() # IDEA: It is discouraged to change the screen measurements!
         self.__x: int = 0
         self.__y: int = 0
         self.__width: int = self.__screen_width
@@ -23,6 +23,8 @@ class CursorBot:
         self.__threads: list[threading.Thread] = []
         self.__is_active: bool = False
         self.__hotkey: str | None = None
+
+    ''' Public Methods '''
 
     def activate_bot(self):
         
@@ -76,7 +78,8 @@ class CursorBot:
         
         if height:
             self.__height = height
-
+        
+        self.__size = "custom"
         print("Coordinates and dimensions have been updated successfully!")
         return True
 
@@ -114,7 +117,7 @@ class CursorBot:
         self.__x = (total_width - self.__width) // 2
         self.__y = (total_height - self.__height) // 2
         
-        print(f"Movement area set to '{formatted_size}' and centered.")
+        print(f"Movement area set to '{formatted_size}' and centered")
 
     def perform_random_click(self):
         pass
@@ -127,6 +130,153 @@ class CursorBot:
         self.__hotkey = key.lower()
 
         k.add_hotkey(self.__hotkey, self.deactivate_bot, timeout=1000)
+
+    ''' Property Methods '''
+
+    @property
+    def screen_width(self):
+        return self.__screen_width
+
+    @screen_width.setter
+    def screen_width(self, value):
+        raise IllegalModificationError("The 'screen_width' attribute is immutable.")
+    
+    @property
+    def screen_height(self):
+        return self.__screen_height
+
+    @screen_height.setter
+    def screen_height(self, value):
+        raise IllegalModificationError("The 'screen_height' attribute is immutable.")
+    
+    @property
+    def x(self):
+        return self.__x
+    
+    @x.setter
+    def x(self, value: int):
+        if not isinstance(value, int) or value < 0:
+            raise InvalidDataTypeError(f"X must be a non-negative integer. Got: {value}")
+        
+        self.__x = value
+
+    @x.deleter
+    def x(self):
+        self.__x = 0
+    
+    @property
+    def y(self):
+        return self.__y
+    
+    @y.setter
+    def y(self, value: int):
+        if not isinstance(value, int) or value < 0:
+            raise InvalidDataTypeError(f"Y must be a non-negative integer. Got: {value}")
+        
+        self.__y = value
+
+    @y.deleter
+    def y(self):
+        self.__y = 0
+    
+    @property
+    def width(self):
+        return self.__width
+    
+    @width.setter
+    def width(self, value: int):
+        if not isinstance(value, int) or value < 0:
+            raise InvalidDataTypeError(f"Width must be a non-negative integer. Got: {value}")
+        
+        self.__width = value
+
+    @width.deleter
+    def width(self):
+        self.__width = self.__screen_width
+    
+    @property
+    def height(self):
+        return self.__height
+    
+    @height.setter
+    def height(self, value: int):
+        if not isinstance(value, int) or value < 0:
+            raise InvalidDataTypeError(f"Height must be a non-negative integer. Got: {value}")
+        
+        self.__height = value
+
+    @height.deleter
+    def height(self):
+        self.__height = self.__screen_height
+    
+    @property
+    def size(self):
+        return self.__size
+    
+    @size.setter
+    def size(self, value: str):
+        self.__size = self.__validate_size(value)
+
+    @size.deleter
+    def size(self):
+        self.__size = "max"
+    
+    @property
+    def duration(self):
+        return self.__duration
+    
+    @duration.setter
+    def duration(self, value: int | float):
+        if not isinstance(value, (int, float)) or value <= 0:
+            raise InvalidDataTypeError(f"Duration must be a positive number. Got: {value}")
+        
+        self.__duration = value
+
+    @duration.deleter
+    def duration(self):
+        self.__duration = 3
+    
+    @property
+    def start_time(self):
+        return self.__start_time
+
+    @start_time.setter
+    def start_time(self, value):
+        raise IllegalModificationError("The 'start_time' attribute is managed internally and cannot be modified.")
+
+    @property
+    def elapsed_time(self):
+        return self.__elapsed_time
+    
+    @elapsed_time.setter
+    def elapsed_time(self, value):
+        raise IllegalModificationError("The 'elapsed_time' attribute is managed internally and cannot be modified.")
+    
+    @property
+    def overall_elapsed_time(self):
+        return self.__overall_elapsed_time
+    
+    @overall_elapsed_time.setter
+    def overall_elapsed_time(self, value):
+        raise IllegalModificationError("The 'overall_elapsed_time' attribute is managed internally and cannot be modified.")
+    
+    @property
+    def threads(self):
+        return self.__threads
+    
+    @property
+    def is_active(self):
+        return self.__is_active
+    
+    @property
+    def hotkey(self):
+        return self.__hotkey
+
+    @hotkey.setter
+    def hotkey(self, value):
+        raise IllegalModificationError("Please use the 'add_hotkey_listener' method to change the hotkey.")
+
+    ''' Private/Helper Methods '''
 
     def __run_bot_logic(self):
             
@@ -141,7 +291,7 @@ class CursorBot:
 
             pag.moveTo(random_x, random_y, duration=self.__duration)
 
-    def __validate_coordinates(self, x: int, y: int, width: int, height: int) -> bool:
+    def __validate_coordinates(self, x: int = 0, y: int = 0, width: int = 0, height: int = 0) -> bool:
         
         if not isinstance(x, int):
             raise InvalidDataTypeError(f"Invalid data type for 'x': {type(x)}")
@@ -157,6 +307,9 @@ class CursorBot:
         
         if width < 0 or height < 0:
             raise ParametersOutOfBoundsError(f"Width and height must be non-negative integers:\nWidth -> {width}\nHeight -> {height}")
+
+        if x < 0 or y < 0:
+            raise ParametersOutOfBoundsError(f"'X' and 'Y' axis must be non-negative integers:\nX -> {x}\nYt -> {y}")
         
         return True
 
@@ -171,6 +324,8 @@ class CursorBot:
             raise InvalidArgumentsError(f"Invalid arguments for 'size': {size}")
         
         return size
+
+    ''' Dunder Methods '''
 
     def __str__(self) -> str:
         current_status: str = "Running" if self.__is_active else "Inactive"
