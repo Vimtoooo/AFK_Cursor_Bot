@@ -14,7 +14,7 @@ class CursorBot:
         self.__y: int = 0
         self.__width: int = self.__screen_width
         self.__height: int = self.__screen_height
-        self.__size: str = "medium"
+        self.__size: str = "max"
         self.__duration: int | float = 3
         self.__start_time: float = 0
         self.__elapsed_time: float = 0
@@ -62,28 +62,59 @@ class CursorBot:
             self.__elapsed_time = 0
             self.__threads.clear()
 
-    def set_movement_area(self, x: int, y: int, width: int, height: int):
+    def set_movement_area(self, x: int = 0, y: int = 0, width: int = 0, height: int = 0) -> bool:
         self.__validate_coordinates(x, y, width, height)
         
-        self.__x = x
-        self.__y = y
-        self.__width = width
-        self.__height = height
+        if x:
+            self.__x = x
+
+        if y:
+            self.__y = y
+
+        if width:
+            self.__width = width
+        
+        if height:
+            self.__height = height
+
+        print("Coordinates and dimensions have been updated successfully!")
+        return True
 
     def auto_set_movement_area(self, size: str = "medium"):
         formatted_size: str = self.__validate_size(size)
-
-        if formatted_size == "small":
-            pass
-
-        elif formatted_size == "medium":
-            pass
+        total_width, total_height = self.__screen_width, self.__screen_height
         
-        elif formatted_size == "large":
-            pass
+        consumed_width: int = 0
+        consumed_height: int = 0
 
-        else:
-            pass
+        if formatted_size == "small": # Consumes 20% of available width and height
+            consumed_width = total_width // 5
+            consumed_height = total_height // 5
+
+        if formatted_size == "medium": # Consumes 50% of available width and height
+            consumed_width = total_width // 2
+            consumed_height = total_height // 2
+        
+        if formatted_size == "large": # Consumes 80% of available width and height
+            consumed_width = int(total_width * 0.8)
+            consumed_height = int(total_height * 0.8)
+        
+        if formatted_size == "max": # Consumes 100% of available width and height
+            consumed_width = total_width
+            consumed_height = total_height
+        
+        if formatted_size == "custom": # Consumes a random portion of area, where the minimum must be at 10 pixels
+            consumed_width = r.randint(10, total_width)
+            consumed_height = r.randint(10, total_height)
+
+        self.__width = consumed_width
+        self.__height = consumed_height
+
+        # Center the movement area
+        self.__x = (total_width - self.__width) // 2
+        self.__y = (total_height - self.__height) // 2
+        
+        print(f"Movement area set to '{formatted_size}' and centered.")
 
     def perform_random_click(self):
         pass
@@ -128,7 +159,7 @@ class CursorBot:
             raise ParametersOutOfBoundsError(f"Width and height must be non-negative integers:\nWidth -> {width}\nHeight -> {height}")
         
         return True
-    
+
     def __validate_size(self, size: str) -> str:
         
         if not isinstance(size, str):
@@ -136,7 +167,7 @@ class CursorBot:
         
         size = size.lower()
         
-        if size not in ("small", "medium", "large", "custom"):
+        if size not in ("small", "medium", "large", "max", "custom"):
             raise InvalidArgumentsError(f"Invalid arguments for 'size': {size}")
         
         return size
@@ -151,6 +182,6 @@ class CursorBot:
             return f"Current Status: {current_status}\n\n\
                     Current elapsed Time: {current_elapsed_time} seconds\n\
                     Overall elapsed Time: {self.__overall_elapsed_time} seconds"
-        
+
         return f"Current Status: {current_status}\n\n\
                 Overall elapsed Time: {self.__overall_elapsed_time} seconds"

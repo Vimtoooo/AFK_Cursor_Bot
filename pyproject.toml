@@ -3,7 +3,7 @@ name = "afk-cursor-bot"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.14.3"
 dependencies = [
     "keyboard>=0.13.5",
     "pyautogui>=0.9.54",
