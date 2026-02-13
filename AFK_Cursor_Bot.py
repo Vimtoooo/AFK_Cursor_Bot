@@ -130,7 +130,75 @@ class CursorBot:
         self.__hotkey = key.lower()
 
         k.add_hotkey(self.__hotkey, self.deactivate_bot, timeout=1000)
+    
+    def reset_settings(self): # TODO: Implement the reset settings method
+        pass
 
+    ''' Private/Helper Methods '''
+
+    def __run_bot_logic(self):
+            
+        while self.__is_active:
+            # Calculate max coordinates, ensuring they don't exceed screen boundaries
+            # We subtract 1 because coordinates are 0-indexed (e.g., 0 to 1919 for 1920 width)
+            max_x = min(self.__x + self.__width, self.__screen_width - 1)
+            max_y = min(self.__y + self.__height, self.__screen_height - 1)
+
+            random_x: int = r.randint(self.__x, max_x)
+            random_y: int = r.randint(self.__y, max_y)
+
+            pag.moveTo(random_x, random_y, duration=self.__duration)
+
+    def __validate_coordinates(self, x: int = 0, y: int = 0, width: int = 0, height: int = 0) -> bool:
+        
+        if not isinstance(x, int):
+            raise InvalidDataTypeError(f"Invalid data type for 'x': {type(x)}")
+        
+        if not isinstance(y, int):
+            raise InvalidDataTypeError(f"Invalid data type for 'y': {type(y)}")
+        
+        if not isinstance(width, int):
+            raise InvalidDataTypeError(f"Invalid data type for 'width': {type(width)}")
+        
+        if not isinstance(height, int):
+            raise InvalidDataTypeError(f"Invalid data type for 'height': {type(height)}")
+        
+        if width < 0 or height < 0:
+            raise ParametersOutOfBoundsError(f"Width and height must be non-negative integers:\nWidth -> {width}\nHeight -> {height}")
+
+        if x < 0 or y < 0:
+            raise ParametersOutOfBoundsError(f"'X' and 'Y' axis must be non-negative integers:\nX -> {x}\nYt -> {y}")
+        
+        return True
+
+    def __validate_size(self, size: str) -> str:
+        
+        if not isinstance(size, str):
+            raise InvalidDataTypeError(f"Invalid data type for 'size': {type(size)}")
+        
+        size = size.lower()
+        
+        if size not in ("small", "medium", "large", "max", "custom"):
+            raise InvalidArgumentsError(f"Invalid arguments for 'size': {size}")
+        
+        return size
+
+    ''' Dunder Methods '''
+
+    def __str__(self) -> str:
+        current_status: str = "Running" if self.__is_active else "Inactive"
+        
+        if self.__is_active:
+            end_time_temporary: float = time.perf_counter()
+            current_elapsed_time: float = round(end_time_temporary - self.__start_time, 3)
+            
+            return f"Current Status: {current_status}\n\n\
+                    Current elapsed Time: {current_elapsed_time} seconds\n\
+                    Overall elapsed Time: {self.__overall_elapsed_time} seconds"
+
+        return f"Current Status: {current_status}\n\n\
+                Overall elapsed Time: {self.__overall_elapsed_time} seconds"
+    
     ''' Property Methods '''
 
     @property
@@ -275,68 +343,3 @@ class CursorBot:
     @hotkey.setter
     def hotkey(self, value):
         raise IllegalModificationError("Please use the 'add_hotkey_listener' method to change the hotkey.")
-
-    ''' Private/Helper Methods '''
-
-    def __run_bot_logic(self):
-            
-        while self.__is_active:
-            # Calculate max coordinates, ensuring they don't exceed screen boundaries
-            # We subtract 1 because coordinates are 0-indexed (e.g., 0 to 1919 for 1920 width)
-            max_x = min(self.__x + self.__width, self.__screen_width - 1)
-            max_y = min(self.__y + self.__height, self.__screen_height - 1)
-
-            random_x: int = r.randint(self.__x, max_x)
-            random_y: int = r.randint(self.__y, max_y)
-
-            pag.moveTo(random_x, random_y, duration=self.__duration)
-
-    def __validate_coordinates(self, x: int = 0, y: int = 0, width: int = 0, height: int = 0) -> bool:
-        
-        if not isinstance(x, int):
-            raise InvalidDataTypeError(f"Invalid data type for 'x': {type(x)}")
-        
-        if not isinstance(y, int):
-            raise InvalidDataTypeError(f"Invalid data type for 'y': {type(y)}")
-        
-        if not isinstance(width, int):
-            raise InvalidDataTypeError(f"Invalid data type for 'width': {type(width)}")
-        
-        if not isinstance(height, int):
-            raise InvalidDataTypeError(f"Invalid data type for 'height': {type(height)}")
-        
-        if width < 0 or height < 0:
-            raise ParametersOutOfBoundsError(f"Width and height must be non-negative integers:\nWidth -> {width}\nHeight -> {height}")
-
-        if x < 0 or y < 0:
-            raise ParametersOutOfBoundsError(f"'X' and 'Y' axis must be non-negative integers:\nX -> {x}\nYt -> {y}")
-        
-        return True
-
-    def __validate_size(self, size: str) -> str:
-        
-        if not isinstance(size, str):
-            raise InvalidDataTypeError(f"Invalid data type for 'size': {type(size)}")
-        
-        size = size.lower()
-        
-        if size not in ("small", "medium", "large", "max", "custom"):
-            raise InvalidArgumentsError(f"Invalid arguments for 'size': {size}")
-        
-        return size
-
-    ''' Dunder Methods '''
-
-    def __str__(self) -> str:
-        current_status: str = "Running" if self.__is_active else "Inactive"
-        
-        if self.__is_active:
-            end_time_temporary: float = time.perf_counter()
-            current_elapsed_time: float = round(end_time_temporary - self.__start_time, 3)
-            
-            return f"Current Status: {current_status}\n\n\
-                    Current elapsed Time: {current_elapsed_time} seconds\n\
-                    Overall elapsed Time: {self.__overall_elapsed_time} seconds"
-
-        return f"Current Status: {current_status}\n\n\
-                Overall elapsed Time: {self.__overall_elapsed_time} seconds"
