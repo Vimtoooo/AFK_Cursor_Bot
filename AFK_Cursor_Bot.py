@@ -18,6 +18,9 @@ class CursorBot:
         self.__duration: int | float = 3
         self.__start_time: float = 0
         self.__elapsed_time: float = 0
+        self.__click_start_time: float = 0
+        self.__click_elapsed_time: float = 0
+        self.__click_overall_elapsed_time: float = 0
         self.__overall_elapsed_time: float = 0
 
         self.__threads: list[threading.Thread] = []
@@ -49,13 +52,21 @@ class CursorBot:
         if not self.__is_active and not self.__is_clicking:
             raise BotAlreadyDeactivatedError("The bot has already been deactivated!")
         
+        end_time: float = time.perf_counter()
+
+        if self.__is_active:
+            self.__elapsed_time = round(end_time - self.__start_time, 3)
+            self.__overall_elapsed_time += self.__elapsed_time
+            print(f"Bot movement elapsed time: {self.__elapsed_time} seconds")
+
+        if self.__is_clicking:
+            self.__click_elapsed_time = round(end_time - self.__click_start_time, 3)
+            self.__click_overall_elapsed_time += self.__click_elapsed_time
+            print(f"Clicking elapsed time: {self.__click_elapsed_time} seconds")
+
         self.__is_active = False
         self.__is_clicking = False
         print("The bot has been terminated")
-
-        end_time: float = time.perf_counter()
-        self.__elapsed_time = round(end_time - self.__start_time, 3)
-        print(f"Bot elapsed time: {self.__elapsed_time} seconds")
 
         try:
             for thread in self.__threads:
@@ -65,12 +76,13 @@ class CursorBot:
             raise ThreadNotStartedError("The thread was not currently being executed for the bot to terminate")
         
         except KeyboardInterrupt:
-            print("Autonomous clicking stopped.")
+            print("Autonomous clicking stopped")
         
         finally:
-            self.__overall_elapsed_time += self.__elapsed_time
             self.__start_time = 0
             self.__elapsed_time = 0
+            self.__click_start_time = 0
+            self.__click_elapsed_time = 0
             self.__threads.clear()
 
     def set_movement_area(self, x: int = 0, y: int = 0, width: int = 0, height: int = 0) -> bool:
@@ -128,20 +140,19 @@ class CursorBot:
         
         print(f"Movement area set to '{formatted_size}' and centered")
 
-    def perform_random_click(self, click_timeout: float | int | None = None) -> bool:
+    def perform_random_click(self, click_duration: float | int | None = None, click_timeout: float | int | None = None) -> bool:
         if self.__is_clicking:
-            print("Clicking is already active.")
+            print("Clicking is already active")
             return False
         
-        if not isinstance(click_timeout, (int, float)) and click_timeout is not None:
-            raise InvalidDataTypeError(f"Invalid data type for 'click_timeout': {type(click_timeout)}")
-        
+        self.__validate_click(click_duration, click_timeout)
         self.__is_clicking = True
         
-        clicker_thread = threading.Thread(target=self.__run_clicking_logic, args=(click_timeout,), name="Clicker")
+        clicker_thread = threading.Thread(target=self.__run_clicking_logic, args=(click_duration, click_timeout,), name="Clicker")
         self.__threads.append(clicker_thread)
         clicker_thread.start()
-        print("Autonomous clicking activated.")
+        print("Autonomous clicking activated")
+        self.__click_start_time = time.perf_counter()
         return True
 
     def add_hotkey_listener(self, key: str) -> bool:
@@ -172,7 +183,7 @@ class CursorBot:
 
             pag.moveTo(random_x, random_y, duration=self.__duration)
 
-    def __run_clicking_logic(self, click_timeout: float | int | None = None) -> None:
+    def __run_clicking_logic(self, click_duration: float | int | None = None, click_timeout: float | int | None = None) -> None:
         if click_timeout is None:
             click_timeout = r.randint(1, 5)
         
@@ -180,6 +191,11 @@ class CursorBot:
         
         try:
             while self.__is_clicking:
+                if click_duration is not None:
+                    current_time = time.perf_counter()
+                    if round(current_time - self.__click_start_time, 3) >= click_duration:
+                        self.__is_clicking = False
+                        break
                 pag.click()
                 time.sleep(click_timeout)
         except Exception as e:
@@ -220,6 +236,22 @@ class CursorBot:
             raise InvalidArgumentsError(f"Invalid arguments for 'size': {size}")
         
         return size
+    
+    def __validate_click(self, click_duration: float | int | None, click_timeout: float | int | None) -> bool:
+
+        if not isinstance(click_duration, (int, float)) and click_duration is not None:
+            raise InvalidDataTypeError(f"Invalid data type for 'click_duration': {type(click_duration)}")
+        
+        if not isinstance(click_timeout, (int, float)) and click_timeout is not None:
+            raise InvalidDataTypeError(f"Invalid data type for 'click_timeout': {type(click_timeout)}")
+        
+        if click_duration is not None and click_duration < 0:
+            raise InvalidArgumentsError(f"The 'click_duration' cannot be a negative number")
+        
+        if click_timeout is not None and click_timeout < 0:
+            raise InvalidArgumentsError(f"The 'click-timeout' cannot be a negative number")
+        
+        return True
 
     ''' Dunder Methods '''
 

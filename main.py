@@ -41,6 +41,21 @@ class Test_Cases:
         time.sleep(5)
         bot4.deactivate_bot()
         return True
+    
+    @staticmethod
+    def random_click_test():
+        bot5: CursorBot = CursorBot()
+        bot5.add_hotkey_listener("esc")
+        bot5.activate_bot(perform_random_click=True)
+        time.sleep(7)
+        bot5.deactivate_bot()
+        return True
+    
+    @staticmethod
+    def perform_clicks_via_method():
+        bot6: CursorBot = CursorBot()
+        bot6.add_hotkey_listener("esc")
+        bot6.perform_random_click(3)
 
     @staticmethod
     def afk_testing() -> bool:
@@ -51,4 +66,4 @@ class Test_Cases:
         return True
 
 if __name__ == "__main__":
-    Test_Cases.auto_setting_movement_area()
+    Test_Cases.random_click_test()
