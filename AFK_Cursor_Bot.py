@@ -22,29 +22,35 @@ class CursorBot:
 
         self.__threads: list[threading.Thread] = []
         self.__is_active: bool = False
+        self.__is_clicking: bool = False
         self.__hotkey: str | None = None
 
     ''' Public Methods '''
 
-    def activate_bot(self):
+    def activate_bot(self, perform_random_click: bool = False) -> bool:
         
         if self.__is_active:
             raise BotAlreadyActivatedError("The bot has already been activated!")
         
         self.__is_active = True
 
-        thread: threading.Thread = threading.Thread(target=self.__run_bot_logic)
+        thread: threading.Thread = threading.Thread(target=self.__run_bot_logic, name="CursorMover")
         self.__threads.append(thread)
         thread.start()
-        self.__start_time = time.perf_counter()
 
+        if perform_random_click:
+            self.perform_random_click()
+
+        self.__start_time = time.perf_counter()
+        return True
 
     def deactivate_bot(self):
         
-        if not self.__is_active:
+        if not self.__is_active and not self.__is_clicking:
             raise BotAlreadyDeactivatedError("The bot has already been deactivated!")
         
         self.__is_active = False
+        self.__is_clicking = False
         print("The bot has been terminated")
 
         end_time: float = time.perf_counter()
@@ -57,6 +63,9 @@ class CursorBot:
 
         except RuntimeError:
             raise ThreadNotStartedError("The thread was not currently being executed for the bot to terminate")
+        
+        except KeyboardInterrupt:
+            print("Autonomous clicking stopped.")
         
         finally:
             self.__overall_elapsed_time += self.__elapsed_time
@@ -119,10 +128,23 @@ class CursorBot:
         
         print(f"Movement area set to '{formatted_size}' and centered")
 
-    def perform_random_click(self): # TODO: Implement the perform_random_click method!
-        pass
+    def perform_random_click(self, click_timeout: float | int | None = None) -> bool:
+        if self.__is_clicking:
+            print("Clicking is already active.")
+            return False
+        
+        if not isinstance(click_timeout, (int, float)) and click_timeout is not None:
+            raise InvalidDataTypeError(f"Invalid data type for 'click_timeout': {type(click_timeout)}")
+        
+        self.__is_clicking = True
+        
+        clicker_thread = threading.Thread(target=self.__run_clicking_logic, args=(click_timeout,), name="Clicker")
+        self.__threads.append(clicker_thread)
+        clicker_thread.start()
+        print("Autonomous clicking activated.")
+        return True
 
-    def add_hotkey_listener(self, key: str) -> None:
+    def add_hotkey_listener(self, key: str) -> bool:
 
         if key is None:
             raise HotkeyNotDefinedError(f"The '{key}' hotkey has not been defined as None!")
@@ -130,9 +152,10 @@ class CursorBot:
         self.__hotkey = key.lower()
 
         k.add_hotkey(self.__hotkey, self.deactivate_bot, timeout=1000)
+        return True
     
     def reset_settings(self) -> None:
-        return self.__init__()
+        self.__init__()
 
     ''' Private/Helper Methods '''
 
@@ -148,6 +171,21 @@ class CursorBot:
             random_y: int = r.randint(self.__y, max_y)
 
             pag.moveTo(random_x, random_y, duration=self.__duration)
+
+    def __run_clicking_logic(self, click_timeout: float | int | None = None) -> None:
+        if click_timeout is None:
+            click_timeout = r.randint(1, 5)
+        
+        pag.FAILSAFE = False
+        
+        try:
+            while self.__is_clicking:
+                pag.click()
+                time.sleep(click_timeout)
+        except Exception as e:
+            print(f"An error occurred in the clicking thread: {e}")
+        finally:
+            pag.FAILSAFE = True
 
     def __validate_coordinates(self, x: int = 0, y: int = 0, width: int = 0, height: int = 0) -> bool:
         
