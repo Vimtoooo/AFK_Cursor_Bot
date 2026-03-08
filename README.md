@@ -29,18 +29,22 @@ We will go through the various methods, libraries and illustrate what each proce
 * `__start_time`: Tracks the exact time when the bot was activated.
 * `__elapsed_time`: Records how long the bot ran during its most recent session.
 * `__overall_elapsed_time`: Accumulates the total runtime of the bot across multiple sessions.
+* `__click_start_time`: Tracks the exact time when the autonomous clicking was activated.
+* `__click_elapsed_time`: Records how long the clicker ran during its most recent session.
+* `__click_overall_elapsed_time`: Accumulates the total runtime of the clicker across multiple sessions.
 * `__threads`: A list managing the background threads to ensure proper cleanup.
 * `__is_active`: A boolean flag acting as the main switch to control the bot's loop.
+* `__is_clicking`: A boolean flag acting as the switch to control the clicking loop.
 * `__hotkey`: Stores the specific key (e.g., "esc") assigned to terminate the bot.
 
 #### Methods:
 
-* `__init__(self)`: The constructor provides instance attributes, whether the user would like to alter the default coordinates, the speed of the cursor, and optionally, the time of cool-down. Later on, property methods (setter, getter and deleter) will be made.
-* `activate_bot(self)`: Activates the bot, executing a **while-loop**.
-* `deactivate_bot(self)`: Deactivates the bot, breaking the **while-loop**.
+* `__init__(self)`: The constructor provides instance attributes, whether the user would like to alter the default coordinates, the speed of the cursor, and optionally, the time of cool-down. Property methods (setter, getter and deleter) are available for attribute management.
+* `activate_bot(self, perform_random_click=False)`: Activates the bot, executing a **while-loop**. Optionally starts the clicker thread if `perform_random_click` is True.
+* `deactivate_bot(self)`: Deactivates the bot, breaking the **while-loop** and stopping any active threads.
 * `set_movement_area(self, x, y, width, height)`: Deposits the coordinates of movement areas for the bot itself.
-* `auto_set_movement_area(self)`: Automatically sets the coordinates of movement for you, based on the size of your screen.
-* `perform_random_click(self, size)`: Executes a right-click (default), just for fun, but the user can also perform a left-click.
+* `auto_set_movement_area(self, size="medium")`: Automatically sets the coordinates of movement for you, based on the size of your screen.
+* `perform_random_click(self, click_duration=None, click_timeout=None)`: Executes random clicks in a separate thread. `click_duration` determines how long the clicking runs (None for infinite), and `click_timeout` sets the interval between clicks.
 * `__str__(self)`: A string dunder method that returns the status of the current bot.
 * `add_hotkey_listener(self, key="esc")`: A simple but advanced feature which uses the library `keyboard` to listen for global hotkeys like the **"esc"**, to instantly deactivate the bot, regardless of what you're doing (can be used as an emergency button!).
-* `reset_settings(self)`: Resets all instance attributes to their default values. (soon)
+* `reset_settings(self)`: Resets all instance attributes to their default values.
