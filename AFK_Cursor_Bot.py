@@ -119,10 +119,10 @@ class CursorBot:
         
         print(f"Movement area set to '{formatted_size}' and centered")
 
-    def perform_random_click(self):
+    def perform_random_click(self): # TODO: Implement the perform_random_click method!
         pass
 
-    def add_hotkey_listener(self, key: str):
+    def add_hotkey_listener(self, key: str) -> None:
 
         if key is None:
             raise HotkeyNotDefinedError(f"The '{key}' hotkey has not been defined as None!")
@@ -131,12 +131,12 @@ class CursorBot:
 
         k.add_hotkey(self.__hotkey, self.deactivate_bot, timeout=1000)
     
-    def reset_settings(self): # TODO: Implement the reset settings method
-        pass
+    def reset_settings(self) -> None:
+        return self.__init__()
 
     ''' Private/Helper Methods '''
 
-    def __run_bot_logic(self):
+    def __run_bot_logic(self) -> None:
             
         while self.__is_active:
             # Calculate max coordinates, ensuring they don't exceed screen boundaries
@@ -202,144 +202,144 @@ class CursorBot:
     ''' Property Methods '''
 
     @property
-    def screen_width(self):
+    def screen_width(self) -> int:
         return self.__screen_width
 
     @screen_width.setter
-    def screen_width(self, value):
+    def screen_width(self, value) -> None:
         raise IllegalModificationError("The 'screen_width' attribute is immutable.")
     
     @property
-    def screen_height(self):
+    def screen_height(self) -> int:
         return self.__screen_height
 
     @screen_height.setter
-    def screen_height(self, value):
+    def screen_height(self, value) -> None:
         raise IllegalModificationError("The 'screen_height' attribute is immutable.")
     
     @property
-    def x(self):
+    def x(self) -> int:
         return self.__x
     
     @x.setter
-    def x(self, value: int):
+    def x(self, value: int) -> None:
         if not isinstance(value, int) or value < 0:
             raise InvalidDataTypeError(f"X must be a non-negative integer. Got: {value}")
         
         self.__x = value
 
     @x.deleter
-    def x(self):
+    def x(self) -> None:
         self.__x = 0
     
     @property
-    def y(self):
+    def y(self) -> int:
         return self.__y
     
     @y.setter
-    def y(self, value: int):
+    def y(self, value: int) -> None:
         if not isinstance(value, int) or value < 0:
             raise InvalidDataTypeError(f"Y must be a non-negative integer. Got: {value}")
         
         self.__y = value
 
     @y.deleter
-    def y(self):
+    def y(self) -> None:
         self.__y = 0
     
     @property
-    def width(self):
+    def width(self) -> int:
         return self.__width
     
     @width.setter
-    def width(self, value: int):
+    def width(self, value: int) -> None:
         if not isinstance(value, int) or value < 0:
             raise InvalidDataTypeError(f"Width must be a non-negative integer. Got: {value}")
         
         self.__width = value
 
     @width.deleter
-    def width(self):
+    def width(self) -> None:
         self.__width = self.__screen_width
     
     @property
-    def height(self):
+    def height(self) -> int:
         return self.__height
     
     @height.setter
-    def height(self, value: int):
+    def height(self, value: int) -> None:
         if not isinstance(value, int) or value < 0:
             raise InvalidDataTypeError(f"Height must be a non-negative integer. Got: {value}")
         
         self.__height = value
 
     @height.deleter
-    def height(self):
+    def height(self) -> None:
         self.__height = self.__screen_height
     
     @property
-    def size(self):
+    def size(self) -> str:
         return self.__size
     
     @size.setter
-    def size(self, value: str):
+    def size(self, value: str) -> None:
         self.__size = self.__validate_size(value)
 
     @size.deleter
-    def size(self):
+    def size(self) -> None:
         self.__size = "max"
     
     @property
-    def duration(self):
+    def duration(self) -> int | float:
         return self.__duration
     
     @duration.setter
-    def duration(self, value: int | float):
+    def duration(self, value: int | float) -> None:
         if not isinstance(value, (int, float)) or value <= 0:
             raise InvalidDataTypeError(f"Duration must be a positive number. Got: {value}")
         
         self.__duration = value
 
     @duration.deleter
-    def duration(self):
+    def duration(self) -> None:
         self.__duration = 3
     
     @property
-    def start_time(self):
+    def start_time(self) -> float:
         return self.__start_time
 
     @start_time.setter
-    def start_time(self, value):
+    def start_time(self, value) -> None:
         raise IllegalModificationError("The 'start_time' attribute is managed internally and cannot be modified.")
 
     @property
-    def elapsed_time(self):
+    def elapsed_time(self) -> float:
         return self.__elapsed_time
     
     @elapsed_time.setter
-    def elapsed_time(self, value):
+    def elapsed_time(self, value) -> None:
         raise IllegalModificationError("The 'elapsed_time' attribute is managed internally and cannot be modified.")
     
     @property
-    def overall_elapsed_time(self):
+    def overall_elapsed_time(self) -> float:
         return self.__overall_elapsed_time
     
     @overall_elapsed_time.setter
-    def overall_elapsed_time(self, value):
+    def overall_elapsed_time(self, value) -> None:
         raise IllegalModificationError("The 'overall_elapsed_time' attribute is managed internally and cannot be modified.")
     
     @property
-    def threads(self):
+    def threads(self) -> list[threading.Thread]:
         return self.__threads
     
     @property
-    def is_active(self):
+    def is_active(self) -> bool:
         return self.__is_active
     
     @property
-    def hotkey(self):
+    def hotkey(self) -> str | None:
         return self.__hotkey
 
     @hotkey.setter
-    def hotkey(self, value):
+    def hotkey(self, value) -> None:
         raise IllegalModificationError("Please use the 'add_hotkey_listener' method to change the hotkey.")
