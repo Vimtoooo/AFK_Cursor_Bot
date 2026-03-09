@@ -146,6 +146,7 @@ class CursorBot:
             return False
         
         self.__validate_click(click_duration, click_timeout)
+        self.__is_active = True
         self.__is_clicking = True
         
         clicker_thread = threading.Thread(target=self.__run_clicking_logic, args=(click_duration, click_timeout,), name="Clicker")
@@ -201,6 +202,7 @@ class CursorBot:
         except Exception as e:
             print(f"An error occurred in the clicking thread: {e}")
         finally:
+            self.__is_clicking = False
             pag.FAILSAFE = True
 
     def __validate_coordinates(self, x: int = 0, y: int = 0, width: int = 0, height: int = 0) -> bool:
