@@ -2,6 +2,10 @@ class BotAlreadyActivatedError(Exception):
     def __init__(self, error: str):
         super().__init__(error)
 
+class ClickingAlreadyActiveError(Exception):
+    def __init__(self, error: str):
+        super().__init__(error)
+
 class BotAlreadyDeactivatedError(Exception):
     def __init__(self, error: str):
         super().__init__(error)

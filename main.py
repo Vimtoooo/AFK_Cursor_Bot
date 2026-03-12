@@ -58,6 +58,18 @@ class Test_Cases:
         bot6.perform_random_click(3)
 
     @staticmethod
+    def string_dunder_method():
+        bot7: CursorBot = CursorBot()
+        bot7.add_hotkey_listener("esc")
+        bot7.activate_bot()
+        time.sleep(3)
+        bot7.perform_random_click()
+        time.sleep(5)
+        bot7.deactivate_bot()
+        time.sleep(2)
+        print(bot7)
+
+    @staticmethod
     def afk_testing() -> bool:
         return True
 
@@ -66,4 +78,4 @@ class Test_Cases:
         return True
 
 if __name__ == "__main__":
-    Test_Cases.random_click_test()
+    Test_Cases.string_dunder_method()

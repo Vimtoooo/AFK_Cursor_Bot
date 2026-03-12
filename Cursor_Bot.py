@@ -80,9 +80,7 @@ class CursorBot:
         
         finally:
             self.__start_time = 0
-            self.__elapsed_time = 0
             self.__click_start_time = 0
-            self.__click_elapsed_time = 0
             self.__threads.clear()
 
     def set_movement_area(self, x: int = 0, y: int = 0, width: int = 0, height: int = 0) -> bool:
@@ -142,11 +140,12 @@ class CursorBot:
 
     def perform_random_click(self, click_duration: float | int | None = None, click_timeout: float | int | None = None) -> bool:
         if self.__is_clicking:
-            print("Clicking is already active")
-            return False
+            raise ClickingAlreadyActiveError("Clicking is already active")
         
         self.__validate_click(click_duration, click_timeout)
-        self.__is_active = True
+
+        if not self.__is_active:
+            self.__is_active = True
         self.__is_clicking = True
         
         clicker_thread = threading.Thread(target=self.__run_clicking_logic, args=(click_duration, click_timeout,), name="Clicker")
@@ -194,13 +193,17 @@ class CursorBot:
             while self.__is_clicking:
                 if click_duration is not None:
                     current_time = time.perf_counter()
+                    
                     if round(current_time - self.__click_start_time, 3) >= click_duration:
                         self.__is_clicking = False
                         break
+
                 pag.click()
                 time.sleep(click_timeout)
+
         except Exception as e:
             print(f"An error occurred in the clicking thread: {e}")
+
         finally:
             self.__is_clicking = False
             pag.FAILSAFE = True
@@ -257,20 +260,42 @@ class CursorBot:
 
     ''' Dunder Methods '''
 
-    def __str__(self) -> str:
+    def __str__(self) -> str: # FIXME: Update the string dunder method!
         current_status: str = "Running" if self.__is_active else "Inactive"
-        
-        if self.__is_active:
-            end_time_temporary: float = time.perf_counter()
-            current_elapsed_time: float = round(end_time_temporary - self.__start_time, 3)
-            
-            return f"Current Status: {current_status}\n\n\
-                    Current elapsed Time: {current_elapsed_time} seconds\n\
-                    Overall elapsed Time: {self.__overall_elapsed_time} seconds"
+        clicking_status: str = "Running" if self.__is_clicking else "Inactive"
 
-        return f"Current Status: {current_status}\n\n\
-                Overall elapsed Time: {self.__overall_elapsed_time} seconds"
-    
+        if self.__is_active:
+            current_elapsed_time = round(time.perf_counter() - self.__start_time, 3)
+        else:
+            current_elapsed_time = self.__elapsed_time
+
+        if self.__is_clicking:
+            current_elapsed_time_clicking = round(time.perf_counter() - self.__click_start_time, 3)
+        else:
+            current_elapsed_time_clicking = self.__click_elapsed_time
+
+        return f"""Current Status: {current_status}
+Clicking Status: {clicking_status}
+
+Movement elapsed time: {current_elapsed_time} seconds
+Clicking elapsed time: {current_elapsed_time_clicking} seconds
+Total movement time: {round(self.__overall_elapsed_time, 3)} seconds
+Total clicking time: {round(self.__click_overall_elapsed_time, 3)} seconds
+
+Active Threads: {len(self.__threads)}
+Bot Set Duration: {self.__duration} seconds
+
+configurations:
+Hotkey: {self.__hotkey}
+Size Set: {self.__size}
+
+Movement Area:
+X: {self.__x} pixels
+Y: {self.__y} pixels
+Width: {self.__width} pixels
+Height: {self.__height} pixels"""
+
+
     ''' Property Methods '''
 
     @property
