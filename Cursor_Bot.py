@@ -261,7 +261,7 @@ class CursorBot:
 
     ''' Dunder Methods '''
 
-    def __str__(self) -> str: # FIXME: Update the string dunder method!
+    def __str__(self) -> str:
         current_status: str = "Running" if self.__is_active else "Inactive"
         clicking_status: str = "Running" if self.__is_clicking else "Inactive"
 

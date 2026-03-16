@@ -18,6 +18,7 @@ We will go through the various methods, libraries and illustrate what each proce
 - `keyboard`: Adds user input during bot execution for safe termination.
 - `random`: Picks the randomly generated number to be one of the required coordinates (for the x-axis and the y-axis).
 - `time`: Provides a short cool-down, giving the ability to prevent the active spam of constant cursor dislocation, but also keeping track of how long the bot has been running for.
+- `textwrap` -> `dedent()`: Utility method which will remove any leading whitespace from every line of text in a string, making the entire single triple-quoted string stay aligned with the return statement (keeps the code environment neat and readable).
 
 #### Instance Attributes:
 
