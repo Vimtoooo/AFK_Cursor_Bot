@@ -51,28 +51,36 @@ class CursorBot:
 
     def deactivate_bot(self):
         
+        # If the bot is already inactive, there's nothing to do. This prevents errors on multiple calls.
         if not self.__is_active and not self.__is_clicking:
-            raise BotAlreadyDeactivatedError("The bot has already been deactivated!")
-        
+            return
+
+        # Immediately signal threads to stop their loops and capture their state for final calculations.
+        was_active = self.__is_active
+        was_clicking = self.__is_clicking
+        self.__is_active = False
+        self.__is_clicking = False
+
         end_time: float = time.perf_counter()
 
-        if self.__is_active:
+        if was_active:
             self.__elapsed_time = round(end_time - self.__start_time, 3)
             self.__overall_elapsed_time += self.__elapsed_time
             print(f"Bot movement elapsed time: {self.__elapsed_time} seconds")
 
-        if self.__is_clicking:
+        if was_clicking:
             self.__click_elapsed_time = round(end_time - self.__click_start_time, 3)
             self.__click_overall_elapsed_time += self.__click_elapsed_time
             print(f"Clicking elapsed time: {self.__click_elapsed_time} seconds")
 
-        self.__is_active = False
-        self.__is_clicking = False
         print("The bot has been terminated")
 
         try:
+            current_thread = threading.current_thread()
             for thread in self.__threads:
-                thread.join()
+                # A thread cannot join itself, so we skip the current thread.
+                if thread is not current_thread and thread.is_alive():
+                    thread.join()
 
         except RuntimeError:
             raise ThreadNotStartedError("The thread was not currently being executed for the bot to terminate")
