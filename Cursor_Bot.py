@@ -28,6 +28,7 @@ class CursorBot:
         self.__is_active: bool = False
         self.__is_clicking: bool = False
         self.__hotkey: str | None = None
+        self.__failsafe = pag.FAILSAFE # By default, it is set to false
 
     ''' Public Methods '''
 
@@ -172,23 +173,27 @@ class CursorBot:
     ''' Private/Helper Methods '''
 
     def __run_bot_logic(self) -> None:
-            
-        while self.__is_active:
-            # Calculate max coordinates, ensuring they don't exceed screen boundaries
-            # We subtract 1 because coordinates are 0-indexed (e.g., 0 to 1919 for 1920 width)
-            max_x = min(self.__x + self.__width, self.__screen_width - 1)
-            max_y = min(self.__y + self.__height, self.__screen_height - 1)
+        try:
+            while self.__is_active:
+                # Calculate max coordinates, ensuring they don't exceed screen boundaries
+                # We subtract 1 because coordinates are 0-indexed (e.g., 0 to 1919 for 1920 width)
+                max_x = min(self.__x + self.__width, self.__screen_width - 1)
+                max_y = min(self.__y + self.__height, self.__screen_height - 1)
 
-            random_x: int = r.randint(self.__x, max_x)
-            random_y: int = r.randint(self.__y, max_y)
+                random_x: int = r.randint(self.__x, max_x)
+                random_y: int = r.randint(self.__y, max_y)
 
-            pag.moveTo(random_x, random_y, duration=self.__duration)
+                pag.moveTo(random_x, random_y, duration=self.__duration)
+
+        except FailSafeException:
+            print("Failsafe triggered. Program stopped safely.")
+
+        finally:
+            self.deactivate_bot()
 
     def __run_clicking_logic(self, click_duration: float | int | None = None, click_timeout: float | int | None = None) -> None:
         if click_timeout is None:
             click_timeout = r.randint(1, 5)
-        
-        pag.FAILSAFE = False
         
         try:
             while self.__is_clicking:
@@ -207,7 +212,6 @@ class CursorBot:
 
         finally:
             self.__is_clicking = False
-            pag.FAILSAFE = True
 
     def __validate_coordinates(self, x: int = 0, y: int = 0, width: int = 0, height: int = 0) -> bool:
         
@@ -443,3 +447,19 @@ class CursorBot:
     @hotkey.setter
     def hotkey(self, value) -> None:
         raise IllegalModificationError("Please use the 'add_hotkey_listener' method to change the hotkey.")
+    
+    @property
+    def failsafe(self) -> bool:
+        return self.__failsafe
+    
+    @failsafe.setter
+    def failsafe(self, value: bool) -> None:
+        if not isinstance(value, bool):
+            raise IllegalModificationError(f"Failsafe must be a boolean type. Got {value}")
+
+        self.__failsafe = value
+        pag.FAILSAFE = value
+    
+    @failsafe.deleter
+    def failsafe(self) -> None:
+        self.__failsafe = True

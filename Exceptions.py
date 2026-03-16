@@ -1,3 +1,5 @@
+from pyautogui import FailSafeException
+
 class BotAlreadyActivatedError(Exception):
     def __init__(self, error: str):
         super().__init__(error)

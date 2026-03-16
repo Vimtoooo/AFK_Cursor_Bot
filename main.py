@@ -70,6 +70,16 @@ class Test_Cases:
         time.sleep(2)
         print(bot7)
         return True
+    
+    @staticmethod
+    def failsafe_test() -> bool:
+        bot8: CursorBot = CursorBot()
+        bot8.add_hotkey_listener("esc")
+        bot8.activate_bot(perform_random_click=True)
+        while True:
+            if (not bot8.is_active):
+                break;
+        return True
 
     @staticmethod
     def afk_testing() -> bool:
@@ -80,4 +90,4 @@ class Test_Cases:
         return True
 
 if __name__ == "__main__":
-    Test_Cases.string_dunder_method()
+    Test_Cases.failsafe_test()
