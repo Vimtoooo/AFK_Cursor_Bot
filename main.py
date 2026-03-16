@@ -52,13 +52,14 @@ class Test_Cases:
         return True
     
     @staticmethod
-    def perform_clicks_via_method():
+    def perform_clicks_via_method() -> bool:
         bot6: CursorBot = CursorBot()
         bot6.add_hotkey_listener("esc")
         bot6.perform_random_click(3)
+        return True
 
     @staticmethod
-    def string_dunder_method():
+    def string_dunder_method() -> bool:
         bot7: CursorBot = CursorBot()
         bot7.add_hotkey_listener("esc")
         bot7.activate_bot()
@@ -68,6 +69,7 @@ class Test_Cases:
         bot7.deactivate_bot()
         time.sleep(2)
         print(bot7)
+        return True
 
     @staticmethod
     def afk_testing() -> bool:

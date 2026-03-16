@@ -3,6 +3,7 @@ import threading
 import keyboard as k
 import random as r
 import time
+from textwrap import dedent
 
 from Exceptions import *
 
@@ -274,26 +275,28 @@ class CursorBot:
         else:
             current_elapsed_time_clicking = self.__click_elapsed_time
 
-        return f"""Current Status: {current_status}
-Clicking Status: {clicking_status}
+        return dedent(f"""\
+            Current Status: {current_status}
+            Clicking Status: {clicking_status}
 
-Movement elapsed time: {current_elapsed_time} seconds
-Clicking elapsed time: {current_elapsed_time_clicking} seconds
-Total movement time: {round(self.__overall_elapsed_time, 3)} seconds
-Total clicking time: {round(self.__click_overall_elapsed_time, 3)} seconds
+            Movement elapsed time: {current_elapsed_time} seconds
+            Clicking elapsed time: {current_elapsed_time_clicking} seconds
+            Total movement time: {round(self.__overall_elapsed_time, 3)} seconds
+            Total clicking time: {round(self.__click_overall_elapsed_time, 3)} seconds
 
-Active Threads: {len(self.__threads)}
-Bot Set Duration: {self.__duration} seconds
+            Active Threads: {len(self.__threads)}
+            Bot Set Duration: {self.__duration} seconds
 
-configurations:
-Hotkey: {self.__hotkey}
-Size Set: {self.__size}
+            configurations:
+            Hotkey: {self.__hotkey}
+            Size Set: {self.__size}
 
-Movement Area:
-X: {self.__x} pixels
-Y: {self.__y} pixels
-Width: {self.__width} pixels
-Height: {self.__height} pixels"""
+            Movement Area:
+            X: {self.__x} pixels
+            Y: {self.__y} pixels
+            Width: {self.__width} pixels
+            Height: {self.__height} pixels
+        """).strip()
 
 
     ''' Property Methods '''
