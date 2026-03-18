@@ -1,10 +1,15 @@
 
 # BUG: Test and identify bugs within the Cursor Bot!
 
-from Cursor_Bot import CursorBot
 import time
+import sys
+import os
 
-class Test_Cases:
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname('__init__.py'), '/src/cursor_bot')))
+
+from src.cursor_bot.core import CursorBot
+
+class Test_Bot:
 
     @staticmethod
     def terminate_via_hotkey():
@@ -90,4 +95,4 @@ class Test_Cases:
         return True
 
 if __name__ == "__main__":
-    Test_Cases.failsafe_test()
+    Test_Bot.failsafe_test()

@@ -1,11 +1,21 @@
 import pyautogui as pag
 import threading
-import keyboard as k
-import random as r
+import keyboard
+import random
 import time
 from textwrap import dedent
 
-from Exceptions import *
+from exceptions import (
+    BotAlreadyActivatedError,
+    ClickingAlreadyActiveError,
+    ThreadNotStartedError,
+    HotkeyNotDefinedError,
+    InvalidDataTypeError,
+    ParametersOutOfBoundsError,
+    InvalidArgumentsError,
+    IllegalModificationError,
+    FailSafeException
+)
 
 class CursorBot:
 
@@ -32,10 +42,13 @@ class CursorBot:
 
     ''' Public Methods '''
 
-    def activate_bot(self, perform_random_click: bool = False) -> bool:
+    def activate_bot(self, perform_random_click: bool = False, countdown: float | int = 0) -> bool:
         
         if self.__is_active:
             raise BotAlreadyActivatedError("The bot has already been activated!")
+        
+        if countdown:
+            time.sleep(countdown)
         
         self.__is_active = True
 
@@ -136,8 +149,8 @@ class CursorBot:
             consumed_height = total_height
         
         if formatted_size == "custom": # Consumes a random portion of area, where the minimum must be at 10 pixels
-            consumed_width = r.randint(10, total_width)
-            consumed_height = r.randint(10, total_height)
+            consumed_width = random.randint(10, total_width)
+            consumed_height = random.randint(10, total_height)
 
         self.__width = consumed_width
         self.__height = consumed_height
@@ -171,8 +184,7 @@ class CursorBot:
             raise HotkeyNotDefinedError(f"The '{key}' hotkey has not been defined as None!")
         
         self.__hotkey = key.lower()
-
-        k.add_hotkey(self.__hotkey, self.deactivate_bot, timeout=1000)
+        keyboard.add_hotkey(self.__hotkey, self.deactivate_bot, timeout=1000)
         return True
     
     def reset_settings(self) -> None:
@@ -188,8 +200,8 @@ class CursorBot:
                 max_x = min(self.__x + self.__width, self.__screen_width - 1)
                 max_y = min(self.__y + self.__height, self.__screen_height - 1)
 
-                random_x: int = r.randint(self.__x, max_x)
-                random_y: int = r.randint(self.__y, max_y)
+                random_x: int = random.randint(self.__x, max_x)
+                random_y: int = random.randint(self.__y, max_y)
 
                 pag.moveTo(random_x, random_y, duration=self.__duration)
 
@@ -201,7 +213,7 @@ class CursorBot:
 
     def __run_clicking_logic(self, click_duration: float | int | None = None, click_timeout: float | int | None = None) -> None:
         if click_timeout is None:
-            click_timeout = r.randint(1, 5)
+            click_timeout = random.randint(1, 5)
         
         try:
             while self.__is_clicking:
@@ -471,3 +483,4 @@ class CursorBot:
     @failsafe.deleter
     def failsafe(self) -> None:
         self.__failsafe = True
+        pag.FAILSAFE = True
