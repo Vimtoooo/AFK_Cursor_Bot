@@ -54,4 +54,4 @@ We will go through the various methods, libraries and illustrate what each proce
 
 - A simple **GUI for users** that will be solicited as a window, offering all the minimalist and interactive entities (use `PySimpleGUI`).
 - **Failsafe**, that will activate and stop the program when the mouse is slammed to any corner on your screen. (FIXED)
-- Organize Python files in appropriate folders (**OPTIONAL**).
+- Organize Python files in appropriate folders (**DONE**).
